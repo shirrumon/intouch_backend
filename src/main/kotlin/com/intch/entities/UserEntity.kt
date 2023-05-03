@@ -10,7 +10,7 @@ data class UserEntity(
 
 object UserEntitySchema : Table() {
     val id = integer("id").autoIncrement()
-    val username = varchar("username", 128)
+    val username = varchar("username", 128).uniqueIndex()
     val password = varchar("password", 1024)
 
     override val primaryKey = PrimaryKey(id)

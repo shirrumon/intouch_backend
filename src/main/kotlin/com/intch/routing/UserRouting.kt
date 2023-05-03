@@ -2,6 +2,7 @@ package com.intch.routing
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.intch.db.facadeImplementation.UserFacadeImplementation
 import com.intch.models.UserModel
 import com.intch.services.user.UserAuthService
 import io.ktor.server.application.*
@@ -31,7 +32,10 @@ fun Application.configureUserRouting() {
 
         post("/register") {
             val user = call.receive<UserModel>()
-            UserAuthService().registerUser(user)
+            UserFacadeImplementation().userDao.createNewUser(
+                user.username,
+                user.password
+            )
         }
     }
 }

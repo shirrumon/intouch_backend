@@ -8,8 +8,8 @@ import org.jetbrains.exposed.sql.transactions.experimental.*
 
 object DataBaseDAO {
     fun init() {
-        val driverClassName = "org.h2.Driver"
-        val jdbcURL = "jdbc:h2:file:./build/db"
+        val driverClassName = "org.postgresql.Driver"
+        val jdbcURL = "jdbc:postgresql://127.0.0.1:54333/intouch?user=postgres"
         val database = Database.connect(jdbcURL, driverClassName)
 
         transaction(database) {

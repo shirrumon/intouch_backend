@@ -53,11 +53,5 @@ class UserFacadeImplementation : UserFacadeDAO {
         UserEntitySchema.deleteWhere { UserEntitySchema.id eq id } > 0
     }
 
-    val userDao: UserFacadeDAO = UserFacadeImplementation().apply {
-        runBlocking {
-            if(allUsers().isEmpty()) {
-                createNewUser("nick", "password")
-            }
-        }
-    }
+    val userDao: UserFacadeDAO = UserFacadeImplementation()
 }
