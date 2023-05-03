@@ -1,12 +1,17 @@
 package com.intch.entities
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.*
 
-@Serializable
 data class UserEntity(
-    @SerialName("username")
-    val userName: String,
-    @SerialName("password")
+    val id: Int,
+    val username: String,
     val password: String
 )
+
+object UserEntitySchema : Table() {
+    val id = integer("id").autoIncrement()
+    val username = varchar("username", 128)
+    val password = varchar("password", 1024)
+
+    override val primaryKey = PrimaryKey(id)
+}
