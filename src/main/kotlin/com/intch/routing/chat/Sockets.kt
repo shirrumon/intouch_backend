@@ -1,7 +1,7 @@
-package com.intch.plugins
+package com.intch.routing.chat
 
 import com.intch.models.chat.Connection
-import io.ktor.network.sockets.*
+import com.intch.services.chat.ChatService
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import java.time.Duration
@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.LinkedHashSet
 
 fun Application.configureSockets() {
+    val chatService = ChatService()
+
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)
         timeout = Duration.ofSeconds(15)
@@ -24,11 +26,18 @@ fun Application.configureSockets() {
         webSocket("/chat") { // websocketSession
             println("Adding user!")
             val thisConnection = Connection(this)
+
+            val targetChatId = call.request.headers["chat_id"]
+            val targetUserId = call.request.headers["target_user_id"]
+
+            val targetUserIdFromSession = sessionsById[targetUserId?.toInt()]
+
+            thisConnection.chatId = targetChatId
+
+            val targetUserChatId = sessionsById[targetUserId?.toInt()]?.chatId
+
             connections += thisConnection
             sessionsById[thisConnection.userId] = thisConnection
-
-            val chatId = call.request.headers["chat_id"]
-            val targetUserId = call.request.headers["target_user_id"]
 
             try {
                 send("You are connected! There are ${connections.count()} users here.")
@@ -36,8 +45,16 @@ fun Application.configureSockets() {
                     frame as? Frame.Text ?: continue
                     val receivedText = frame.readText()
                     val textWithUsername = "[${thisConnection.name}]: $receivedText"
-                    if(chatId == "1") {
-                        sessionsById[targetUserId?.toInt()]?.session?.send(textWithUsername)
+
+                    if(targetUserChatId?.equals(targetChatId) == true) {
+                        chatService.createMessage(
+                            receivedText,
+                            thisConnection.userId,
+                            targetUserIdFromSession!!.userId,
+                            targetChatId
+                        )
+
+                        targetUserIdFromSession.session.send(textWithUsername)
                     }
                 }
             } catch (e: Exception) {
