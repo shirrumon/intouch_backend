@@ -8,6 +8,11 @@ services:
         condition: service_healthy
   db:
     image: postgres
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
     environment:
