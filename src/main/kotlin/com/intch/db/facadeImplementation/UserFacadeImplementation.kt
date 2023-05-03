@@ -2,15 +2,16 @@ package com.intch.db.facadeImplementation
 
 import com.intch.db.facade.UserFacadeDAO
 import com.intch.entities.*
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import com.intch.db.dao.DataBaseDAO.dbQuery
 import org.mindrot.jbcrypt.BCrypt
+import java.util.*
 
 class UserFacadeImplementation : UserFacadeDAO {
     private fun resultRowToUser(row: ResultRow) = UserEntity(
         id = row[UserEntitySchema.id],
+        userUuid = row[UserEntitySchema.userUuid],
         username = row[UserEntitySchema.username],
         password = row[UserEntitySchema.password],
     )
@@ -36,6 +37,7 @@ class UserFacadeImplementation : UserFacadeDAO {
     override suspend fun createNewUser(username: String, password: String): UserEntity? = dbQuery {
         val insertStatement = UserEntitySchema.insert {
             it[UserEntitySchema.username] = username
+            it[userUuid] = UUID.randomUUID().toString()
             it[UserEntitySchema.password] = BCrypt.hashpw(password, BCrypt.gensalt())
         }
 

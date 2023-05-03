@@ -6,6 +6,8 @@ import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import java.time.Duration
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -21,56 +23,45 @@ fun Application.configureSockets() {
         masking = false
     }
     routing {
-        val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
-        val sessionsById = ConcurrentHashMap<Int, Connection>()
-        webSocket("/chat") { // websocketSession
-            println("Adding user!")
-            val thisConnection = Connection(this)
+        authenticate {
+            val connections = Collections.synchronizedSet<Connection>(LinkedHashSet())
+            val sessionsById = ConcurrentHashMap<String, Connection>()
+            webSocket("/chat") {
+                val thisConnection = Connection(this)
+                val principal = call.principal<JWTPrincipal>()
+                val thisUserId = principal!!.payload.getClaim("user").asString()
+                val targetChatId = call.request.headers["chat_id"]
+                val targetUserId = call.request.headers["target_user_id"]
 
-            val targetChatId = call.request.headers["chat_id"]
-            val targetUserId = call.request.headers["target_user_id"]
+                thisConnection.chatId = targetChatId
+                thisConnection.userId = thisUserId
 
-            thisConnection.chatId = targetChatId
+                connections += thisConnection
+                sessionsById[thisUserId] = thisConnection
 
-            val targetUserChatId = sessionsById[targetUserId?.toInt()]?.chatId
+                try {
+                    send("You are connected! There are ${connections.count()} users here.")
+                    for (frame in incoming) {
+                        frame as? Frame.Text ?: continue
+                        val receivedText = frame.readText()
 
-            connections += thisConnection
-            sessionsById[thisConnection.userId] = thisConnection
+                        if(sessionsById.containsKey(targetUserId)) {
+                            sessionsById[targetUserId]?.session?.send(receivedText)
+                        }
 
-            val targetUserFromSession = sessionsById[targetUserId?.toInt()]
-
-            try {
-                send("You are connected! There are ${connections.count()} users here.")
-                for (frame in incoming) {
-                    frame as? Frame.Text ?: continue
-                    val receivedText = frame.readText()
-                    val textWithUsername = "[${thisConnection.name}]: $receivedText"
-
-                    if(targetUserFromSession == null) {
                         chatService.createMessage(
                             receivedText,
-                            thisConnection.userId,
-                            targetUserId!!.toInt(),
+                            thisUserId!!,
+                            targetUserId!!,
                             targetChatId
                         )
-                    } else {
-                        if(targetUserChatId?.equals(targetChatId) == true) {
-                            chatService.createMessage(
-                                receivedText,
-                                thisConnection.userId,
-                                targetUserFromSession.userId,
-                                targetChatId
-                            )
-
-                            targetUserFromSession.session.send(textWithUsername)
-                        }
                     }
+                } catch (e: Exception) {
+                    println(e.message)
+                } finally {
+                    sessionsById.remove(thisConnection.userId)
+                    connections -= thisConnection
                 }
-            } catch (e: Exception) {
-                println(e.localizedMessage)
-            } finally {
-                println("Removing $thisConnection!")
-                connections -= thisConnection
             }
         }
     }

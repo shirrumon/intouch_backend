@@ -8,11 +8,11 @@ class ChatService {
     private val messageFacadeImplementation = ChatMessageImpl()
     suspend fun createMessage(
         messageText: String,
-        userFrom: Int,
-        userTo: Int,
+        userFrom: String,
+        userTo: String,
         toChat: String? = null
     ) {
-        if(toChat == null) {
+        if(toChat.isNullOrEmpty()) {
             val chat = chatImplementation.createNewChat(userFrom, userTo)
             messageFacadeImplementation.createNewMessage(
                 messageText,

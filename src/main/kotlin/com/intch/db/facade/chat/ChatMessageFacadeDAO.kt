@@ -7,8 +7,8 @@ interface ChatMessageFacadeDAO {
     suspend fun createNewMessage(
         messageText: String,
         fromChat: String,
-        userFrom: Int,
-        userTo: Int
+        userFrom: String,
+        userTo: String
     ): ChatMessageEntity?
     suspend fun deleteMessage(id: Int): Boolean
 }

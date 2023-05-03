@@ -6,8 +6,8 @@ data class ChatMessageEntity(
     val id: Int,
     val messageText: String,
     val fromChat: String,
-    val userFrom: Int,
-    val userTo: Int,
+    val userFrom: String,
+    val userTo: String,
     val isRead: Boolean,
     val sentTimestamp: String
 )
@@ -16,8 +16,8 @@ object ChatMessageSchema : Table() {
     val id = integer("id").autoIncrement()
     val messageText = text("message_text")
     val fromChat = varchar("from_chat", 50)
-    val userFrom = integer("user_from")
-    val userTo = integer("user_to")
+    val userFrom = varchar("user_from", 50)
+    val userTo = varchar("user_to", 50)
     val isRead = bool("is_read")
     val sentTimestamp = varchar("sent_time_stamp", 50)
 

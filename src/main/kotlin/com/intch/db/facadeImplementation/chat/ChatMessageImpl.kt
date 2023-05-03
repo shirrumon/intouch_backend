@@ -11,7 +11,6 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
 class ChatMessageImpl : ChatMessageFacadeDAO {
     private fun resultRowToChatMessage(row: ResultRow) = ChatMessageEntity(
@@ -31,8 +30,8 @@ class ChatMessageImpl : ChatMessageFacadeDAO {
     override suspend fun createNewMessage(
         messageText: String,
         fromChat: String,
-        userFrom: Int,
-        userTo: Int
+        userFrom: String,
+        userTo: String
     ): ChatMessageEntity? = dbQuery {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val currentDateTime = LocalDateTime.now().format(formatter)

@@ -29,7 +29,7 @@ class ChatFacadeImpl : ChatFacadeDAO {
             .firstOrNull()
     }
 
-    override suspend fun createNewChat(currentUser: Int, targetUser: Int): ChatEntity? = dbQuery {
+    override suspend fun createNewChat(currentUser: String, targetUser: String): ChatEntity? = dbQuery {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val currentDateTime = LocalDateTime.now().format(formatter)
 
