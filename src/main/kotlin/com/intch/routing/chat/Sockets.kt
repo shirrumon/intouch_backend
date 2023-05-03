@@ -30,14 +30,14 @@ fun Application.configureSockets() {
             val targetChatId = call.request.headers["chat_id"]
             val targetUserId = call.request.headers["target_user_id"]
 
-            val targetUserIdFromSession = sessionsById[targetUserId?.toInt()]
-
             thisConnection.chatId = targetChatId
 
             val targetUserChatId = sessionsById[targetUserId?.toInt()]?.chatId
 
             connections += thisConnection
             sessionsById[thisConnection.userId] = thisConnection
+
+            val targetUserFromSession = sessionsById[targetUserId?.toInt()]
 
             try {
                 send("You are connected! There are ${connections.count()} users here.")
@@ -46,15 +46,24 @@ fun Application.configureSockets() {
                     val receivedText = frame.readText()
                     val textWithUsername = "[${thisConnection.name}]: $receivedText"
 
-                    if(targetUserChatId?.equals(targetChatId) == true) {
+                    if(targetUserFromSession == null) {
                         chatService.createMessage(
                             receivedText,
                             thisConnection.userId,
-                            targetUserIdFromSession!!.userId,
+                            targetUserId!!.toInt(),
                             targetChatId
                         )
+                    } else {
+                        if(targetUserChatId?.equals(targetChatId) == true) {
+                            chatService.createMessage(
+                                receivedText,
+                                thisConnection.userId,
+                                targetUserFromSession.userId,
+                                targetChatId
+                            )
 
-                        targetUserIdFromSession.session.send(textWithUsername)
+                            targetUserFromSession.session.send(textWithUsername)
+                        }
                     }
                 }
             } catch (e: Exception) {

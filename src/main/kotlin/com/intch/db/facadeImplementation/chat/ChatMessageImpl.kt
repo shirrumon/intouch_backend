@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
 class ChatMessageImpl : ChatMessageFacadeDAO {
@@ -33,7 +34,7 @@ class ChatMessageImpl : ChatMessageFacadeDAO {
         userFrom: Int,
         userTo: Int
     ): ChatMessageEntity? = dbQuery {
-        val formatter = ISO_OFFSET_DATE_TIME
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val currentDateTime = LocalDateTime.now().format(formatter)
 
         val inserted = ChatMessageSchema.insert {
