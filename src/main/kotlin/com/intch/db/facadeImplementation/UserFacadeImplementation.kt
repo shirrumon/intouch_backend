@@ -23,23 +23,23 @@ class UserFacadeImplementation : UserFacadeDAO {
         UserEntitySchema
             .select { UserEntitySchema.id eq id }
             .map(::resultRowToUser)
-            .singleOrNull()
+            .firstOrNull()
     }
 
     override suspend fun userByUsername(username: String): UserEntity? = dbQuery {
         UserEntitySchema
             .select { UserEntitySchema.username eq username }
             .map(::resultRowToUser)
-            .singleOrNull()
+            .firstOrNull()
     }
 
-    override suspend fun createNewUser(username: String, password: String): UserEntity? {
+    override suspend fun createNewUser(username: String, password: String): UserEntity? = dbQuery {
         val insertStatement = UserEntitySchema.insert {
             it[UserEntitySchema.username] = username
             it[UserEntitySchema.password] = BCrypt.hashpw(password, BCrypt.gensalt())
         }
 
-        return insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToUser)
+        insertStatement.resultedValues?.firstOrNull()?.let(::resultRowToUser)
     }
 
     override suspend fun editUser(id: Int, username: String, password: String): Boolean = dbQuery {
@@ -52,6 +52,4 @@ class UserFacadeImplementation : UserFacadeDAO {
     override suspend fun deleteUser(id: Int): Boolean = dbQuery {
         UserEntitySchema.deleteWhere { UserEntitySchema.id eq id } > 0
     }
-
-    val userDao: UserFacadeDAO = UserFacadeImplementation()
 }

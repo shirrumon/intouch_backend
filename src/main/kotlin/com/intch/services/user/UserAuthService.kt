@@ -13,7 +13,7 @@ class UserAuthService {
     fun checkUserWhenLogin(user: UserModel): MutableStateFlow<Boolean> {
         val isUserExistAndCorrect = MutableStateFlow(false)
         GlobalScope.launch {
-            val requestedUser = UserFacadeImplementation().userDao.userByUsername(user.username)
+            val requestedUser = UserFacadeImplementation().userByUsername(user.username)
 
             if(requestedUser != null && BCrypt.checkpw(user.password, requestedUser.password)) {
                 isUserExistAndCorrect.value = true
@@ -26,7 +26,7 @@ class UserAuthService {
     @OptIn(DelicateCoroutinesApi::class)
     fun registerUser(user: UserModel) {
         GlobalScope.launch {
-            UserFacadeImplementation().userDao.createNewUser(
+            UserFacadeImplementation().createNewUser(
                 user.username,
                 user.password
             )

@@ -14,6 +14,6 @@ fun Application.module() {
     configureSockets()
     configureUserRouting()
     configureSerialization()
-    DataBaseDAO.init()
+    DataBaseDAO.init(environment.config)
     configureRouting()
 }
