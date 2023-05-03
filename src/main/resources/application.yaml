@@ -12,4 +12,4 @@ jwt:
 
 storage:
     driverClassName: "org.postgresql.Driver"
-    jdbcURL: "jdbc:postgresql://db:5432/intouch?user=postgres"
+    jdbcURL: "jdbc:postgresql://127.0.0.1:54333/intouch?user=postgres"
