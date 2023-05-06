@@ -4,7 +4,7 @@ import com.intch.db.dao.DataBaseDAO.dbQuery
 import com.intch.db.facade.chat.ChatFacadeDAO
 import com.intch.entities.ChatEntity
 import com.intch.entities.ChatEntitySchema
-import com.intch.entities.UserEntitySchema
+import com.intch.entities.user.UserEntitySchema
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.LocalDateTime

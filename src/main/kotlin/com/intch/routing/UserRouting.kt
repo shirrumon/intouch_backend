@@ -2,7 +2,8 @@ package com.intch.routing
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.intch.models.UserModel
+import com.intch.models.user.UserModel
+import com.intch.models.user.UserRegisterModel
 import com.intch.services.user.UserAuthService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -28,8 +29,8 @@ fun Application.configureUserRouting() {
         }
 
         post("/register") {
-            val user = call.receive<UserModel>()
-            UserAuthService().registerUser(user)
+            val requestedUser = call.receive<UserRegisterModel>()
+            UserAuthService().registerUser(requestedUser)
             call.respond("Successfully registered")
         }
     }

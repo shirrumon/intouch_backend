@@ -15,5 +15,5 @@ object ChatEntitySchema : Table() {
     val chatCreated = varchar("chat_created", 50)
     val chatAllowedUsers = varchar("chat_allowed_users", 250)
 
-    override val primaryKey = PrimaryKey(UserEntitySchema.id)
+    override val primaryKey = PrimaryKey(id)
 }

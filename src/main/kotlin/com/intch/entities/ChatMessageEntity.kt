@@ -21,5 +21,5 @@ object ChatMessageSchema : Table() {
     val isRead = bool("is_read")
     val sentTimestamp = varchar("sent_time_stamp", 50)
 
-    override val primaryKey = PrimaryKey(UserEntitySchema.id)
+    override val primaryKey = PrimaryKey(id)
 }

@@ -1,4 +1,4 @@
-package com.intch.models
+package com.intch.models.user
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

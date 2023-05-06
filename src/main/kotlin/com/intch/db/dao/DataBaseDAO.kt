@@ -1,6 +1,7 @@
 package com.intch.db.dao
 
 import com.intch.entities.*
+import com.intch.entities.user.UserEntitySchema
 import io.ktor.server.config.*
 import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.*
