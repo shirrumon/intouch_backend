@@ -16,6 +16,8 @@ object DataBaseDAO {
 
         transaction(database) {
             SchemaUtils.create(UserEntitySchema)
+            SchemaUtils.create(ChatEntitySchema)
+            SchemaUtils.create(ChatMessageSchema)
         }
     }
 

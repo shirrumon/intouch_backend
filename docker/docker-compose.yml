@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: intouch
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "54333:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 15s
+      timeout: 35s
+      retries: 15

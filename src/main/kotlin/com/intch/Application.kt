@@ -3,6 +3,7 @@ package com.intch
 import com.intch.db.dao.DataBaseDAO
 import io.ktor.server.application.*
 import com.intch.plugins.*
+import com.intch.routing.chat.configureSockets
 import com.intch.routing.configureUserRouting
 
 fun main(args: Array<String>): Unit =
